@@ -1,8 +1,12 @@
 ﻿using System;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Analysers;
 
 namespace Lesson_03
 {
@@ -14,7 +18,7 @@ namespace Lesson_03
         }
     }
 
-
+    //[MemoryDiagnoser] //Оставил для будущих экспериментов.
     [Config(typeof(MyConfig))]
 
     public class BenchmarkClass
@@ -22,16 +26,19 @@ namespace Lesson_03
         #region ---- FIELDS ----
 
         /// <summary>Минимальное возможное значение координат</summary>
-        private const int MIN = -1000;
+        private const int MIN = -10000;
         /// <summary>Максимальное возможное значение координат</summary>
-        private const int MAX = -1000;
+        private const int MAX = 10000;
         /// <summary>Количество элементов в массиве со случайными координатами</summary>
-        private const int ELEMENTS = 1000;
+        private const int ELEMENTS = 100000;
         /// <summary>Указатель для перебора кординат в массиве</summary>
-        private int index = 0;
+        private int pointer = 0;
 
-        /// <summary>Массив содержащий случайные значения координат</summary>
-        private int[] randomCoordinates = new int[ELEMENTS];
+        /// <summary>Массив содержащий случайные float значения координат</summary>
+        private float[] randomFloatCoordinates = new float[ELEMENTS];
+
+        /// <summary>Массив содержащий случайные double значения координат</summary>
+        private double[] randomDoubleCoordinates = new double[ELEMENTS];
 
         #endregion
 
@@ -44,8 +51,23 @@ namespace Lesson_03
         {
             public MyConfig()
             {
-                AddColumn(StatisticColumn.Max);
-                AddColumn(StatisticColumn.Median);
+
+                //AddJob(Job.Dry);
+                AddJob(Job.MediumRun);
+                AddLogger(ConsoleLogger.Default);
+                AddColumn(
+                    TargetMethodColumn.Method, 
+                    StatisticColumn.Mean,
+                    StatisticColumn.StdErr,
+                    StatisticColumn.StdDev,
+                    StatisticColumn.Median,
+                    StatisticColumn.Max);
+                AddExporter(
+                    AsciiDocExporter.Default, 
+                    MarkdownExporter.GitHub, 
+                    HtmlExporter.Default);
+                AddAnalyser(EnvironmentAnalyser.Default);
+                UnionRule = ConfigUnionRule.AlwaysUseLocal;
 
             }
         }
@@ -61,11 +83,12 @@ namespace Lesson_03
         {
             ///Заполняем массив случайными числами
             Random rnd = new Random();
-            for (int i = 0; i < randomCoordinates.Length; i++)
+            for (int i = 0; i < ELEMENTS; i++)
             {
-                randomCoordinates[i] = rnd.Next(MIN, MAX);
-                index = rnd.Next(ELEMENTS);
+                randomFloatCoordinates[i] = (float)(rnd.NextDouble() * (MAX - MIN) - MAX);
+                randomDoubleCoordinates[i] = (rnd.NextDouble() * (MAX - MIN) - MAX);
             }
+            pointer = rnd.Next(ELEMENTS); //Рандомизируем указатель в массиве.
         }
 
         #endregion
@@ -73,16 +96,29 @@ namespace Lesson_03
         #region ---- ADDITIONAL METHODS ----
 
         /// <summary>
-        /// Выдает два числа из массива координат и сдвигает его указатель на следующую позицию
+        /// Выдает два числа из массива float координат и сдвигает его указатель на следующую позицию
         /// </summary>
-        /// <returns>Кортеж с двумя координатами</returns>
-        public (float, float) giveMeCoordinates()
+        /// <returns>Кортеж с двумя float координатами</returns>
+        public (float, float) giveMeFloatCoordinates()
         {
-            if (index > ELEMENTS - 4)
-                index = 0;
+            if (pointer > ELEMENTS - 4)
+                pointer = 0;
             else
-                index += 2;
-            return (randomCoordinates[index], randomCoordinates[index + 1]);
+                pointer += 2;
+            return (randomFloatCoordinates[pointer], randomFloatCoordinates[pointer + 1]);
+        }
+
+        /// <summary>
+        /// Выдает два числа из массива float координат и сдвигает его указатель на следующую позицию
+        /// </summary>
+        /// <returns>Кортеж с двумя float координатами</returns>
+        public (double, double) giveMeDoubleCoordinates()
+        {
+            if (pointer > ELEMENTS - 4)
+                pointer = 0;
+            else
+                pointer += 2;
+            return (randomDoubleCoordinates[pointer], randomDoubleCoordinates[pointer + 1]);
         }
 
         #endregion
@@ -181,32 +217,32 @@ namespace Lesson_03
         [Benchmark(Description = "Расстояние через классы float", Baseline = true)]
         public void TestPointDistanceClassFloat()
         {
-            PointClassFloat pointOne = new PointClassFloat(giveMeCoordinates());
-            PointClassFloat pointTwo = new PointClassFloat(giveMeCoordinates());
+            PointClassFloat pointOne = new PointClassFloat(giveMeFloatCoordinates());
+            PointClassFloat pointTwo = new PointClassFloat(giveMeFloatCoordinates());
             PointDistanceClassFloat(pointOne, pointTwo);
         }
 
         [Benchmark(Description = "Расстояние через структуры float")]
         public void TestPointDistanceStructFloat()
         {
-            PointStructFloat pointOne = new PointStructFloat(giveMeCoordinates());
-            PointStructFloat pointTwo = new PointStructFloat(giveMeCoordinates());
+            PointStructFloat pointOne = new PointStructFloat(giveMeFloatCoordinates());
+            PointStructFloat pointTwo = new PointStructFloat(giveMeFloatCoordinates());
             PointDistanceStructFloat(pointOne, pointTwo);
         }
 
         [Benchmark(Description = "Расстояние через структуры double")]
         public void TestPointDistanceStructDouble()
         {
-            PointStructDouble pointOne = new PointStructDouble(giveMeCoordinates());
-            PointStructDouble pointTwo = new PointStructDouble(giveMeCoordinates());
+            PointStructDouble pointOne = new PointStructDouble(giveMeDoubleCoordinates());
+            PointStructDouble pointTwo = new PointStructDouble(giveMeDoubleCoordinates());
             PointDistanceStructDouble(pointOne, pointTwo);
         }
 
         [Benchmark(Description = "Квадрат расстояния через структуры float")]
         public void TestPointDistanceShortStructFloat()
         {
-            PointStructFloat pointOne = new PointStructFloat(giveMeCoordinates());
-            PointStructFloat pointTwo = new PointStructFloat(giveMeCoordinates());
+            PointStructFloat pointOne = new PointStructFloat(giveMeFloatCoordinates());
+            PointStructFloat pointTwo = new PointStructFloat(giveMeFloatCoordinates());
             PointDistanceShortStructFloat(pointOne, pointTwo);
         }
 
