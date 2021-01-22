@@ -39,6 +39,8 @@ namespace Lesson_03
         /// <summary>Массив содержащий случайные float значения координат</summary>
         private int[] randomIntCoordinates = new int[ELEMENTS];
         /// <summary>Массив содержащий случайные float значения координат</summary>
+        private long[] randomLongCoordinates = new long[ELEMENTS];
+        /// <summary>Массив содержащий случайные float значения координат</summary>
         private float[] randomFloatCoordinates = new float[ELEMENTS];
         /// <summary>Массив содержащий случайные double значения координат</summary>
         private double[] randomDoubleCoordinates = new double[ELEMENTS];
@@ -91,6 +93,7 @@ namespace Lesson_03
             for (int i = 0; i < ELEMENTS; i++)
             {
                 randomIntCoordinates[i] = rnd.Next(MIN, MAX);
+                randomLongCoordinates[i] = rnd.Next(MIN, MAX) * 1000000;
                 randomFloatCoordinates[i] = (float)(rnd.NextDouble() * (MAX - MIN) - MAX);
                 randomDoubleCoordinates[i] = (rnd.NextDouble() * (MAX - MIN) - MAX);
             }
@@ -113,6 +116,20 @@ namespace Lesson_03
                 pointer += 2;
             return (randomIntCoordinates[pointer], randomIntCoordinates[pointer + 1]);
         }
+
+        /// <summary>
+        /// Выдает два числа из массива long координат и сдвигает его указатель на следующую позицию
+        /// </summary>
+        /// <returns>Кортеж с двумя long координатами</returns>
+        public (long, long) giveMeLongCoordinates()
+        {
+            if (pointer > ELEMENTS - 4)
+                pointer = 0;
+            else
+                pointer += 2;
+            return (randomLongCoordinates[pointer], randomLongCoordinates[pointer + 1]);
+        }
+
 
         /// <summary>
         /// Выдает два числа из массива float координат и сдвигает его указатель на следующую позицию
@@ -157,6 +174,19 @@ namespace Lesson_03
             }
         }
 
+        /// <summary>Точка с координатами виде класса со сзначениями X, Y в long</summary>
+        public class PointClassLong
+        {
+            public long X { get; set; }
+            public long Y { get; set; }
+
+            public PointClassLong((long x, long y) coord)
+            {
+                X = coord.x;
+                Y = coord.y;
+            }
+        }
+
         /// <summary>Точка с координатами виде класса со сзначениями X, Y во float</summary>
         public class PointClassFloat
         {
@@ -190,6 +220,19 @@ namespace Lesson_03
             public int Y;
 
             public PointStructInt((int x, int y) coord)
+            {
+                X = coord.x;
+                Y = coord.y;
+            }
+        }
+
+        /// <summary>Точка с координатами виде структуры со сзначениями X, Y в long</summary>
+        public struct PointStructLong
+        {
+            public long X;
+            public long Y;
+
+            public PointStructLong((long x, long y) coord)
             {
                 X = coord.x;
                 Y = coord.y;
@@ -237,6 +280,17 @@ namespace Lesson_03
             return (int)Math.Sqrt((x * x) + (y * y));
         }
 
+        /// <summary>Рассчет расстояния между двумя точками реализованными классов в long</summary>
+        /// <param name="pointOne">Точка 1</param>
+        /// <param name="pointTwo">Точка 2</param>
+        /// <returns>Расстояние между точками</returns>
+        public long PointDistanceClassLong(PointClassLong pointOne, PointClassLong pointTwo)
+        {
+            long x = pointOne.X - pointTwo.X;
+            long y = pointOne.Y - pointTwo.Y;
+            return (long)Math.Sqrt((x * x) + (y * y));
+        }
+
         /// <summary>Рассчет расстояния между двумя точками реализованными классов во float</summary>
         /// <param name="pointOne">Точка 1</param>
         /// <param name="pointTwo">Точка 2</param>
@@ -268,6 +322,17 @@ namespace Lesson_03
             int x = pointOne.X - pointTwo.X;
             int y = pointOne.Y - pointTwo.Y;
             return (int)Math.Sqrt((x * x) + (y * y));
+        }
+
+        /// <summary>Рассчет расстояния между двумя точками реализованными структурами в long</summary>
+        /// <param name="pointOne">Точка 1</param>
+        /// <param name="pointTwo">Точка 2</param>
+        /// <returns>Расстояние между точками</returns>
+        public long PointDistanceStructLong(PointStructLong pointOne, PointStructLong pointTwo)
+        {
+            long x = pointOne.X - pointTwo.X;
+            long y = pointOne.Y - pointTwo.Y;
+            return (long)Math.Sqrt((x * x) + (y * y));
         }
 
         /// <summary>Рассчет расстояния между двумя точками реализованными структурами во float</summary>
@@ -303,6 +368,17 @@ namespace Lesson_03
             return ((x * x) + (y * y));
         }
 
+        /// <summary>Рассчет квадрата расстояния между двумя точками реализованными структурами во double</summary>
+        /// <param name="pointOne">Точка 1</param>
+        /// <param name="pointTwo">Точка 2</param>
+        /// <returns>Квадрат расстояния между точками</returns>
+        public double PointDistanceShortStructDouble(PointStructDouble pointOne, PointStructDouble pointTwo)
+        {
+            double x = pointOne.X - pointTwo.X;
+            double y = pointOne.Y - pointTwo.Y;
+            return ((x * x) + (y * y));
+        }
+
         /// <summary>Рассчет квадрата расстояния между двумя точками реализованными структурами в int</summary>
         /// <param name="pointOne">Точка 1</param>
         /// <param name="pointTwo">Точка 2</param>
@@ -311,6 +387,17 @@ namespace Lesson_03
         {
             int x = pointOne.X - pointTwo.X;
             int y = pointOne.Y - pointTwo.Y;
+            return ((x * x) + (y * y));
+        }
+
+        /// <summary>Рассчет квадрата расстояния между двумя точками реализованными структурами в long</summary>
+        /// <param name="pointOne">Точка 1</param>
+        /// <param name="pointTwo">Точка 2</param>
+        /// <returns>Квадрат расстояния между точками</returns>
+        public long PointDistanceShortStructLong(PointStructLong pointOne, PointStructLong pointTwo)
+        {
+            long x = pointOne.X - pointTwo.X;
+            long y = pointOne.Y - pointTwo.Y;
             return ((x * x) + (y * y));
         }
 
@@ -325,6 +412,14 @@ namespace Lesson_03
             PointClassInt pointOne = new PointClassInt(giveMeIntCoordinates());
             PointClassInt pointTwo = new PointClassInt(giveMeIntCoordinates());
             PointDistanceClassInt(pointOne, pointTwo);
+        }
+
+        [Benchmark(Description = "Расстояние через классы long")]
+        public void TestPointDistanceClassLong()
+        {
+            PointClassLong pointOne = new PointClassLong(giveMeLongCoordinates());
+            PointClassLong pointTwo = new PointClassLong(giveMeLongCoordinates());
+            PointDistanceClassLong(pointOne, pointTwo);
         }
 
         [Benchmark(Description = "Расстояние через классы float")]
@@ -351,6 +446,14 @@ namespace Lesson_03
             PointDistanceStructInt(pointOne, pointTwo);
         }
 
+        [Benchmark(Description = "Расстояние через структуры long")]
+        public void TestPointDistanceStructLong()
+        {
+            PointStructLong pointOne = new PointStructLong(giveMeLongCoordinates());
+            PointStructLong pointTwo = new PointStructLong(giveMeLongCoordinates());
+            PointDistanceStructLong(pointOne, pointTwo);
+        }
+
         [Benchmark(Description = "Расстояние через структуры float")]
         public void TestPointDistanceStructFloat()
         {
@@ -367,6 +470,22 @@ namespace Lesson_03
             PointDistanceStructDouble(pointOne, pointTwo);
         }
 
+        [Benchmark(Description = "Квадрат расстояния через структуры int")]
+        public void TestPointDistanceShortStructInt()
+        {
+            PointStructInt pointOne = new PointStructInt(giveMeIntCoordinates());
+            PointStructInt pointTwo = new PointStructInt(giveMeIntCoordinates());
+            PointDistanceShortStructInt(pointOne, pointTwo);
+        }
+
+        [Benchmark(Description = "Квадрат расстояния через структуры long")]
+        public void TestPointDistanceShortStructLong()
+        {
+            PointStructLong pointOne = new PointStructLong(giveMeLongCoordinates());
+            PointStructLong pointTwo = new PointStructLong(giveMeLongCoordinates());
+            PointDistanceShortStructLong(pointOne, pointTwo);
+        }
+
         [Benchmark(Description = "Квадрат расстояния через структуры float")]
         public void TestPointDistanceShortStructFloat()
         {
@@ -375,12 +494,12 @@ namespace Lesson_03
             PointDistanceShortStructFloat(pointOne, pointTwo);
         }
 
-        [Benchmark(Description = "Квадрат расстояния через структуры int")]
-        public void TestPointDistanceShortStructInt()
+        [Benchmark(Description = "Квадрат расстояния через структуры double")]
+        public void TestPointDistanceShortStructDouble()
         {
-            PointStructInt pointOne = new PointStructInt(giveMeIntCoordinates());
-            PointStructInt pointTwo = new PointStructInt(giveMeIntCoordinates());
-            PointDistanceShortStructInt(pointOne, pointTwo);
+            PointStructDouble pointOne = new PointStructDouble(giveMeDoubleCoordinates());
+            PointStructDouble pointTwo = new PointStructDouble(giveMeDoubleCoordinates());
+            PointDistanceShortStructDouble(pointOne, pointTwo);
         }
 
         [Benchmark(Description = "Расстояние через структуры double (с приведением из float)")]
