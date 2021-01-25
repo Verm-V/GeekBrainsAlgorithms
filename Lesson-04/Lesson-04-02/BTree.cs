@@ -118,12 +118,29 @@ namespace Lesson_04_02
             return height;
         }
 
+        private Node.NodePosition? MeForParent(Node node)
+        {
+            if (node.Parent == null) return null;
+            if (node.Parent.Left == node) return Node.NodePosition.left;
+            if (node.Parent.Right == node) return Node.NodePosition.right;
+            return null;
+        }
+
         public void RemoveNode(int value)
         {
-            throw new NotImplementedException();
+            Node node = Find(value, root);
+            if(node != null)
+            {
+                Remove(node);
+            }
         }
 
         #endregion
+
+        private void Remove(Node node)
+        {
+
+        }
 
         /// <summary>
         /// Выводит структуру дерева в консоль.
