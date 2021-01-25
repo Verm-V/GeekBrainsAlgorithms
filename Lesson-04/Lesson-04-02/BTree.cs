@@ -95,9 +95,9 @@ namespace Lesson_04_02
         /// </summary>
         /// <param name="Value">Искомое значение</param>
         /// <returns>true, если узел с таким значением есть в дереве.</returns>
-        public bool FindNOde(int Value)
+        public bool FindNode(int value)
         {
-            throw new NotImplementedException();
+            return (Find(value, root) != null);
         }
 
         /// <summary>
@@ -172,6 +172,17 @@ namespace Lesson_04_02
             return currentHeight+1;
         }
 
+        private Node Find(int value, Node node)
+        {
+            if (node == null) return null;
+
+            if (node.Data == value) return node;
+            if (node.Data > value)
+            {
+                return Find(value, node.Left);
+            }
+            return Find(value, node.Right);
+        }
     }
 
 

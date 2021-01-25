@@ -114,7 +114,9 @@ namespace Lesson_04_02
                 indent += "│ ";
             }
 
-            var stringValue = empty ? "--" : Data.ToString();
+            // !!! DEBUG - версия для дебага с распечаткой рангов
+            var stringValue = empty ? "--" : (Rank.ToString() + ":" + Data.ToString());
+            //var stringValue = empty ? "--" : Data.ToString();
             PrintValue(stringValue, nodePosition);
 
             if (!empty && (this.Left != null || this.Right != null))

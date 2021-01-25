@@ -12,7 +12,7 @@ namespace Lesson_04_02
         int GetCount(); // возвращает количество элементов в дереве
         void AddNode(int value);  // добавляет новый элемент в дерево
         void RemoveNode(int value); // удаляет элемент в дереве, если он там есть
-        bool FindNOde(int Value); //Находит значение в дереве
+        bool FindNode(int value); //Находит значение в дереве
 
 
 
