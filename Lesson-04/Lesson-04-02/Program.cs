@@ -50,7 +50,10 @@ namespace Lesson_04_02
             From,
             To,
             NumbersList,
-            Amount
+            Amount,
+            Contain,
+            NotContain,
+            WhiteSpaceLine
         }
 
         /// <summary> Словарь с сообщениями для пользователя </summary>
@@ -62,7 +65,10 @@ namespace Lesson_04_02
         { Messages.From, "от"},
         { Messages.To, "до"},
         { Messages.NumbersList, "Содержимое дерева"},
-        { Messages.Amount, "всего"}
+        { Messages.Amount, "всего"},
+        { Messages.Contain, "Данное число присутствует в дереве."},
+        { Messages.NotContain, "Данного числа нет в дереве."},
+        { Messages.WhiteSpaceLine, "        "}
         };
 
         /// <summary> Пункты главного меню, последний пункт выход из программы </summary>
@@ -71,6 +77,8 @@ namespace Lesson_04_02
             "Добавить число в дерево",
             "Добавить случайное число в дерево\n",
             "Удалить число из дерева\n",
+            "Проверить наличие числа в дереве\n",
+            "Изменить способ отображения дерева\n",
             "Выход"
         };
 
@@ -79,7 +87,7 @@ namespace Lesson_04_02
         #region -- NUMBER CONSTS --
 
         /// <summary>Минимальное значение числа хранимого в узле дерева</summary>
-        private const int VALUE_MIN = -99;
+        private const int VALUE_MIN = 0;
         /// <summary>Максимальное значение числа хранимого в узле дерева</summary>
         private const int VALUE_MAX = 99;
         /// <summary>Количество узлов в дереве (для первоначального случайного заполнения)</summary>
@@ -118,13 +126,13 @@ namespace Lesson_04_02
                 }
             }
 
-            if (seed != 0)
+            if(seed!=0)
                 rnd = new Random(seed);
             else
                 rnd = new Random();
 
             //Формируем сообщение главного меню
-            string mainMenuMessage = messages[Messages.ChooseOption] + "\n";
+            string mainMenuMessage = "\n" + messages[Messages.ChooseOption] + "\n";
             for (int i = 0; i < mainMenu.Length; i++)
                 mainMenuMessage += $"{i + 1} - {mainMenu[i]}\n";
 
@@ -137,12 +145,12 @@ namespace Lesson_04_02
             {
                 AddRandomNumberToTree(tree, rnd);
                 Console.Clear();
-                tree.Print();
             }
 
+            bool printMethod = false;
 
-            Console.Clear();
-            tree.Print();
+            Print(tree, printMethod);
+
 
             //Основной цикл
             bool isExit = false;
@@ -152,25 +160,46 @@ namespace Lesson_04_02
                 switch (input)
                 {
                     case 1://add itemp
+                        Print(tree, printMethod);
                         tree.AddNode(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
-                        Console.Clear();
-                        tree.Print();
+                        Print(tree, printMethod);
                         break;
                     case 2://add random itemp
                         AddRandomNumberToTree(tree, rnd);
-                        Console.Clear();
-                        tree.Print();
+                        Print(tree, printMethod);
                         break;
                     case 3://delete item
+                        Print(tree, printMethod);
                         tree.RemoveNode(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
-                        Console.Clear();
-                        tree.Print();
+                        Print(tree, printMethod);
                         break;
-                    case 4://exit
+                    case 4://check number
+                        Print(tree, printMethod);
+                        bool isContain = tree.Contains(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        if(isContain)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine(messages[Messages.Contain]);
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine(messages[Messages.NotContain]);
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                        }
+                        MessageWaitKey(string.Empty);
+                        Print(tree, printMethod);
+                        break;
+                    case 5://change print method
+                        printMethod = !printMethod;
+                        Print(tree, printMethod);
+                        break;
+                    case 6://exit
                         isExit = true;
                         break;
                 }
-
+                
             }
 
 
@@ -184,7 +213,7 @@ namespace Lesson_04_02
             bool isDone = false;
             while (!isDone)
             {
-                int newValue = rnd.Next(VALUE_MIN, VALUE_MAX + 1);
+                int newValue = rnd.Next(VALUE_MIN, VALUE_MAX+1);
                 if (!tree.Contains(newValue))
                 {
                     tree.AddNode(newValue);
@@ -193,6 +222,20 @@ namespace Lesson_04_02
 
             }
         }
+
+        private static void Print(BTree tree, bool method = false)
+        {
+            Console.Clear();
+            if (method)
+            {
+                tree.Print();
+            }
+            else
+            {
+                BTreePrinter.Print(tree.Root, "[0]", 4, 2, 2);
+            }
+        }
+
 
         #region -------- Вспомогательные методы --------
 
@@ -237,6 +280,8 @@ namespace Lesson_04_02
                         {
                             Console.CursorLeft = 0;//Если ввели что-то не то, то просто возвращаем курсор на прежнее место
                             Console.CursorTop -= 2;
+                            Console.Write(messages[Messages.WhiteSpaceLine]);
+                            Console.CursorLeft = 0;
                         }
                         catch
                         {
