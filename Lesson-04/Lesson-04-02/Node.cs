@@ -1,31 +1,332 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Lesson_04_02
 {
-    /// <summary>Узел двоичного дерева</summary>
-    public class Node
-    {
-        /// <summary>Данные содержащиеся в узле дерева</summary>
-        public int Data { get; set; }
-        /// <summary>Ссылка на левого потомка</summary>
-        public Node Left { get; set; }
-        /// <summary>Ссылка на правого потомка</summary>
-        public Node Right { get; set; }
-        /// <summary>Ссылка на родителя</summary>
-        public Node Parent { get; set; }
-        /// <summary>Ранг узла в дереве</summary>
-        public int Rank { get; set; }
 
-        public Node(int data, int rank = 0, Node parent = null)
+    /// <summary>Единичный узел дерева</summary>
+    public class Node : IComparable
+    {
+        #region ---- FIELDS ----
+
+        /// <summary>Указатель на левый узел</summary>
+        private Node left;
+        /// <summary>Указатель на правый узел</summary>
+        private Node right;
+
+        #endregion
+
+        #region ---- PROPERTIES ----
+
+        /// <summary>Указатель на дерево содержащее узел</summary>
+        public BTree Tree
         {
-            Data = data;
-            Parent = parent;
-            Rank = rank;
+            get;
+            private set;
         }
+
+        /// <summary>Указатель на левый узел</summary>
+        public Node Left
+        {
+            get
+            {
+                return left;
+            }
+
+            internal set
+            {
+                left = value;
+
+                if (left != null)
+                {
+                    left.Parent = this;  //Устанавливаем указатель на родительский узел у потомка
+                }
+            }
+        }
+
+        /// <summary>Указатель на правый узел</summary>
+        public Node Right
+        {
+            get
+            {
+                return right;
+            }
+
+            internal set
+            {
+                right = value;
+
+                if (right != null)
+                {
+                    right.Parent = this;  //Устанавливаем указатель на родительский узел у потомка
+                }
+            }
+        }
+
+        /// <summary>Указатель на родительский узел</summary>
+        public Node Parent
+        {
+            get;
+            internal set;
+        }
+
+
+        /// <summary>Значение хранимое в узле</summary>
+        public int Value
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
+        #region ---- CONSTRUCTOR ----
+        /// <summary>
+        /// Узел двоичного дерева
+        /// </summary>
+        /// <param name="value">Значение хранимое в узле</param>
+        /// <param name="parent">Указатель на родительский узел</param>
+        /// <param name="tree">Указатель на дерево содержащее узел</param>
+        public Node(int value, Node parent, BTree tree)
+        {
+            Value = value;
+            Parent = parent;
+            Tree = tree;
+        }
+        #endregion
+
+        #region ---- INTERFACE ----
+
+        /// <summary>
+        /// Реализация интерфейса IComparable
+        /// Сравнивает значение хранимое в узле с указанным значением
+        /// </summary>
+        /// <param name="other">Элемент с которым идет сравнение</param>
+        /// <returns>
+        /// +1 - если значение больше переданного значения
+        /// -1 - если значение меньше переданного значения
+        /// 0 если значения равны
+        /// </returns>
+        public int CompareTo(object other)
+        {
+            return Value.CompareTo(other);
+        }
+        #endregion
+
+        #region ---- BALANCE ----
+
+        /// <summary>
+        /// Балансировка дерева
+        /// Проверяет состояние дерева и вызывает необходимый метод поворота
+        /// </summary>
+        internal void Balance()
+        {
+            //Если правая ветка больше левой
+            if (State == TreeState.RightHeavy)
+            {
+                if (Right != null && Right.BalanceFactor < 0)
+                {
+                    LeftRightRotation();
+                }
+
+                else
+                {
+                    LeftRotation();
+                }
+            }
+            //Если левая ветка больше правой
+            else if (State == TreeState.LeftHeavy)
+            {
+                if (Left != null && Left.BalanceFactor > 0)
+                {
+                    RightLeftRotation();
+                }
+                else
+                {
+                    RightRotation();
+                }
+            }
+            //Идем вверх по дереву, для проверки необходимости балансировки вышестоящих узлов
+            if (this.Parent != null) this.Parent.Balance();
+
+
+        }
+
+        /// <summary>Рекурсивный рассчет высоты дерева</summary>
+        /// <param name="node">Узел дерева от которого считается высота</param>
+        /// <returns>Максимальную высоту от корня к ветвям</returns>
+        private int MaxChildHeight(Node node)
+        {
+            if (node != null)
+            {
+                return 1 + Math.Max(MaxChildHeight(node.Left), MaxChildHeight(node.Right));
+            }
+
+            return 0;
+        }
+
+        /// <summary>Высота левого поддерева</summary>
+        private int LeftHeight
+        {
+            get
+            {
+                return MaxChildHeight(Left);
+            }
+        }
+
+        /// <summary>Высота правого поддерева</summary>
+        private int RightHeight
+        {
+            get
+            {
+                return MaxChildHeight(Right);
+            }
+        }
+
+        /// <summary>Проверка дерева на сбалансированность</summary>
+        private TreeState State
+        {
+            get
+            {
+                if (LeftHeight - RightHeight > 1)
+                {
+                    return TreeState.LeftHeavy;
+                }
+
+                if (RightHeight - LeftHeight > 1)
+                {
+                    return TreeState.RightHeavy;
+                }
+
+                return TreeState.Balanced;
+            }
+        }
+
+        /// <summary>
+        /// Фактор балансировки, показывает куда нужно будет вращать дерево
+        /// Вычисляется через разницу высот деревьев.
+        /// </summary>
+        private int BalanceFactor
+        {
+            get
+            {
+                return RightHeight - LeftHeight;
+            }
+        }
+
+        /// <summary>Возможные состояния дерева</summary>
+        enum TreeState
+        {
+            Balanced,//Дерево сбалансировано
+            LeftHeavy,//Левое дерево больше
+            RightHeavy,//Правое дерево больше
+        }
+
+        #endregion
+
+        #region ---- ROTATIONS ----
+
+        /// <summary>Левое вращение</summary>
+        private void LeftRotation()
+        {
+
+            // До
+            //     12(this)     
+            //      \     
+            //       15     
+            //        \     
+            //         25     
+            //     
+            // После     
+            //       15     
+            //      / \     
+            //     12  25  
+
+            // Сделать правого потомка новым корнем дерева.
+            Node newRoot = Right;
+            ReplaceRoot(newRoot);
+
+            // Поставить на место правого потомка - левого потомка нового корня.    
+            Right = newRoot.Left;
+            // Сделать текущий узел - левым потомком нового корня.    
+            newRoot.Left = this;
+        }
+
+        /// <summary>Левое вращение</summary>
+        private void RightRotation()
+        {
+            // Было
+            //     c (this)     
+            //    /     
+            //   b     
+            //  /     
+            // a     
+            //     
+            // Стало    
+            //       b     
+            //      / \     
+            //     a   c  
+
+            // Левый узел текущего элемента становится новым корнем
+            Node newRoot = Left;
+            ReplaceRoot(newRoot);
+
+            // Перемещение правого потомка нового корня на место левого потомка старого корня
+            Left = newRoot.Right;
+
+            // Правым потомком нового корня, становится старый корень.     
+            newRoot.Right = this;
+        }
+
+        /// <summary>Лево-правое вращение</summary>
+        private void LeftRightRotation()
+        {
+            Right.RightRotation();
+            LeftRotation();
+        }
+
+        /// <summary>Право-левое вращение</summary>
+        private void RightLeftRotation()
+        {
+            Left.LeftRotation();
+            RightRotation();
+        }
+
+        #endregion
+
+        #region ---- ROOT REPLACE ----
+
+        /// <summary>
+        /// Замена корня дерева на указанный узел
+        /// </summary>
+        /// <param name="newRoot">Новый корень дерева</param>
+        private void ReplaceRoot(Node newRoot)
+        {
+            if (this.Parent != null)
+            {
+                if (this.Parent.Left == this)
+                {
+                    this.Parent.Left = newRoot;
+                }
+                else if (this.Parent.Right == this)
+                {
+                    this.Parent.Right = newRoot;
+                }
+            }
+            else
+            {
+                Tree.Root = newRoot;
+            }
+
+            newRoot.Parent = this.Parent;
+            this.Parent = newRoot;
+        }
+
+        #endregion
 
         #region ---- PRINT METHODS ----
 
@@ -63,7 +364,7 @@ namespace Lesson_04_02
                     throw new NotImplementedException();
             }
         }
-        
+
         /// <summary>
         /// Печать левой ветки узла
         /// </summary>
@@ -100,23 +401,21 @@ namespace Lesson_04_02
         /// <param name="empty">true, если лист пустой</param>
         public void PrintNode(string indent, NodePosition nodePosition, bool last, bool empty)
         {
-            System.Threading.Thread.Sleep(100);//небольшая задержка для наглядности работы алгоритма
+            //System.Threading.Thread.Sleep(10);//небольшая задержка для наглядности работы алгоритма
 
             Console.Write(indent);
             if (last)
             {
-                Console.Write("└─");
-                indent += "  ";
+                Console.Write("└────");
+                indent += "     ";
             }
             else
             {
-                Console.Write("├─");//│ ├ └ ─
-                indent += "│ ";
+                Console.Write("├────");//│ ├ └ ─
+                indent += "│    ";
             }
 
-            // !!! DEBUG - версия для дебага с распечаткой рангов
-            var stringValue = empty ? "--" : (Rank.ToString() + ":" + Data.ToString());
-            //var stringValue = empty ? "--" : Data.ToString();
+            var stringValue = empty ? "--" : Value.ToString();
             PrintValue(stringValue, nodePosition);
 
             if (!empty && (this.Left != null || this.Right != null))
@@ -135,7 +434,5 @@ namespace Lesson_04_02
         }
 
         #endregion
-
-
     }
 }
