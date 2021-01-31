@@ -74,7 +74,7 @@ namespace Lesson_05_01
 
         #endregion
 
-        #region ---- FIND METHODS ----
+        #region ---- SEARCH METHODS ----
 
         /// <summary>Проверяет содержит ли дерево заданное значение</summary>
         /// <param name="value">Искомое значение</param>
@@ -122,6 +122,41 @@ namespace Lesson_05_01
         {
             return Count;
         }
+
+        public void BFS()
+        {
+            Queue<Node> bufer = new Queue<Node>();
+
+            bufer.Enqueue(this.Root);
+
+            while(bufer.Count!=0)
+            {
+                Node element = bufer.Dequeue();
+                Console.Write(element.Value + " ");
+                if (element.Left != null) bufer.Enqueue(element.Left);
+                if (element.Right != null) bufer.Enqueue(element.Right);
+            }
+
+
+        }
+
+        public void DFS()
+        {
+            Stack<Node> bufer = new Stack<Node>();
+
+            bufer.Push(this.Root);
+
+            while (bufer.Count != 0)
+            {
+                Node element = bufer.Pop();
+                Console.Write(element.Value + " ");
+                if (element.Right != null) bufer.Push(element.Right);
+                if (element.Left != null) bufer.Push(element.Left);
+            }
+
+
+        }
+
 
         #endregion
 

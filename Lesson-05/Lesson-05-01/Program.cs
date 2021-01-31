@@ -77,7 +77,9 @@ namespace Lesson_05_01
             "Добавить число в дерево",
             "Добавить случайное число в дерево\n",
             "Удалить число из дерева\n",
-            "Проверить наличие числа в дереве\n",
+            "Проверить наличие числа в дереве",
+            "BFS",
+            "DFS\n",
             "Изменить способ отображения дерева\n",
             "Выход"
         };
@@ -191,11 +193,23 @@ namespace Lesson_05_01
                         MessageWaitKey(string.Empty);
                         Print(tree, printMethod);
                         break;
-                    case 5://change print method
+                    case 5://BFS
+                        Print(tree, printMethod);
+                        tree.BFS();
+                        MessageWaitKey(string.Empty);
+                        Print(tree, printMethod);
+                        break;
+                    case 6://DFS
+                        Print(tree, printMethod);
+                        tree.DFS();
+                        MessageWaitKey(string.Empty);
+                        Print(tree, printMethod);
+                        break;
+                    case 7://change print method
                         printMethod = !printMethod;
                         Print(tree, printMethod);
                         break;
-                    case 6://exit
+                    case 8://exit
                         isExit = true;
                         break;
                 }
