@@ -74,13 +74,9 @@ namespace Lesson_05_01
         /// <summary> Пункты главного меню, последний пункт выход из программы </summary>
         private static readonly string[] mainMenu = new string[]
         {
-            "Добавить число в дерево",
-            "Добавить случайное число в дерево\n",
-            "Удалить число из дерева\n",
-            "Проверить наличие числа в дереве",
-            "BFS",
-            "DFS\n",
-            "Изменить способ отображения дерева\n",
+            "Бинарный поиск",
+            "Поиск в ширину",
+            "Поиск в глубину\n",
             "Выход"
         };
 
@@ -93,7 +89,7 @@ namespace Lesson_05_01
         /// <summary>Максимальное значение числа хранимого в узле дерева</summary>
         private const int VALUE_MAX = 99;
         /// <summary>Количество узлов в дереве (для первоначального случайного заполнения)</summary>
-        private const int ELEMENTS = 10;
+        private const int ELEMENTS = 20;
 
         #endregion
 
@@ -134,7 +130,7 @@ namespace Lesson_05_01
                 rnd = new Random();
 
             //Формируем сообщение главного меню
-            string mainMenuMessage = "\n" + messages[Messages.ChooseOption] + "\n";
+            string mainMenuMessage = "\n" + messages[Messages.ChooseOption] + "\n\n";
             for (int i = 0; i < mainMenu.Length; i++)
                 mainMenuMessage += $"{i + 1} - {mainMenu[i]}\n";
 
@@ -161,55 +157,25 @@ namespace Lesson_05_01
                 int input = NumberInput(mainMenuMessage, 1, mainMenu.Length);
                 switch (input)
                 {
-                    case 1://add itemp
+                    case 1://binary search
                         Print(tree, printMethod);
-                        tree.AddNode(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
-                        Print(tree, printMethod);
-                        break;
-                    case 2://add random itemp
-                        AddRandomNumberToTree(tree, rnd);
+                        bool isContain = tree.BinarySearch(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        MessageWaitKey(isContain ? messages[Messages.Contain] : messages[Messages.NotContain]);
                         Print(tree, printMethod);
                         break;
-                    case 3://delete item
+                    case 2://BFS
                         Print(tree, printMethod);
-                        tree.RemoveNode(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
-                        Print(tree, printMethod);
-                        break;
-                    case 4://check number
-                        Print(tree, printMethod);
-                        bool isContain = tree.Contains(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
-                        if(isContain)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine(messages[Messages.Contain]);
-                            Console.ForegroundColor = ConsoleColor.Gray;
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine(messages[Messages.NotContain]);
-                            Console.ForegroundColor = ConsoleColor.Gray;
-                        }
-                        MessageWaitKey(string.Empty);
+                        isContain = tree.BFS(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        MessageWaitKey(isContain ? messages[Messages.Contain] : messages[Messages.NotContain]);
                         Print(tree, printMethod);
                         break;
-                    case 5://BFS
+                    case 3://DFS
                         Print(tree, printMethod);
-                        tree.BFS();
-                        MessageWaitKey(string.Empty);
-                        Print(tree, printMethod);
-                        break;
-                    case 6://DFS
-                        Print(tree, printMethod);
-                        tree.DFS();
-                        MessageWaitKey(string.Empty);
+                        isContain = tree.DFS(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        MessageWaitKey(isContain ? messages[Messages.Contain] : messages[Messages.NotContain]);
                         Print(tree, printMethod);
                         break;
-                    case 7://change print method
-                        printMethod = !printMethod;
-                        Print(tree, printMethod);
-                        break;
-                    case 8://exit
+                    case 4://exit
                         isExit = true;
                         break;
                 }
@@ -246,7 +212,7 @@ namespace Lesson_05_01
             }
             else
             {
-                BTreePrinter.Print(tree.Root, "[0]", 4, 2, 2);
+                BTreePrinter.Print(tree.Root, true);
             }
         }
 

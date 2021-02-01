@@ -9,6 +9,9 @@ namespace Lesson_05_01
     /// <summary>Класс двоичного дерева поиска</summary>
     public class BTree
     {
+        /// <summary>Задержка для визуализации алгоритма</summary>
+        private const int DELAY = 250;
+
         #region ---- PROPERTIES
 
         /// <summary>Корень дерева</summary>
@@ -92,7 +95,6 @@ namespace Lesson_05_01
         /// <param name="value">Значение поиска</param> 
         /// <param name="parent">Родительский элемент для найденного значения/// </param> 
         /// <returns> Найденный узел (null, если узел не найден) /// </returns> 
-
         private Node Find(int value)
         {
             // Указатель на текущий узел. Начинаем с корня дерева
@@ -123,40 +125,104 @@ namespace Lesson_05_01
             return Count;
         }
 
-        public void BFS()
+        #endregion
+
+        #region ---- NEW SEARCH METHODS ----
+
+        /// <summary>
+        /// Метод бинарного поиска с задержкой и раскраской для визуализации алгоритма
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool BinarySearch(int value)
+        {
+            // Указатель на текущий узел. Начинаем с корня дерева
+            Node current = Root;
+
+            // Пока текщий узел на пустой 
+            while (current != null)
+            {
+                int result = current.CompareTo(value);
+                ColorPrint();
+
+                // Если значение меньшне текущего - переход влево 
+                if (result > 0)
+                {
+                    current.Color = ConsoleColor.Red;
+                    current = current.Left;
+                }
+                // Если значение больше текщего - переход вправо
+                else if (result < 0)
+                {
+                    current.Color = ConsoleColor.Red;
+                    current = current.Right;
+                }
+                // Если значение совпадает - узел найден
+                else
+                {
+                    current.Color = ConsoleColor.Green;
+                    break;
+                }
+            }
+
+            ColorPrint();
+
+            return current != null; ;
+        }
+
+        /// <summary>
+        /// Поиск (обход) дерева в ширину
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool BFS(int value)
         {
             Queue<Node> bufer = new Queue<Node>();
-
+                        
             bufer.Enqueue(this.Root);
-
-            while(bufer.Count!=0)
+            
+            bool isFound = false;
+            while (bufer.Count!=0 && !isFound)
             {
                 Node element = bufer.Dequeue();
-                Console.Write(element.Value + " ");
+                if (element.Value == value) isFound = true;
+                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                ColorPrint();
                 if (element.Left != null) bufer.Enqueue(element.Left);
                 if (element.Right != null) bufer.Enqueue(element.Right);
             }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine();
 
-
+            return isFound;
         }
 
-        public void DFS()
+        /// <summary>
+        /// Поиск (обход) дерева в глубину
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool DFS(int value)
         {
             Stack<Node> bufer = new Stack<Node>();
 
             bufer.Push(this.Root);
 
-            while (bufer.Count != 0)
+            bool isFound = false;
+            while (bufer.Count != 0 && !isFound)
             {
                 Node element = bufer.Pop();
-                Console.Write(element.Value + " ");
+                if (element.Value == value) isFound = true;
+                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                ColorPrint();
                 if (element.Right != null) bufer.Push(element.Right);
                 if (element.Left != null) bufer.Push(element.Left);
             }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine();
 
-
+            return isFound;
         }
-
 
         #endregion
 
@@ -346,6 +412,16 @@ namespace Lesson_05_01
                 Root.PrintNode("", Node.NodePosition.center, true, false);
             else
                 Console.WriteLine("Tree is empty.");
+        }
+
+        /// <summary>
+        /// Вывод дерева на экран с раскраской узлов
+        /// </summary>
+        private void ColorPrint()
+        {
+            Console.Clear();
+            BTreePrinter.Print(Root, false);
+            System.Threading.Thread.Sleep(DELAY);//небольшая задержка для наглядности работы алгоритма
         }
 
         #endregion

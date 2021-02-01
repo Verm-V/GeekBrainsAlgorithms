@@ -74,12 +74,18 @@ namespace Lesson_05_01
             internal set;
         }
 
-
-        /// <summary>Значение хранимое в узле</summary>
+                /// <summary>Значение хранимое в узле</summary>
         public int Value
         {
             get;
             private set;
+        }
+
+        /// <summary>Цвет ноды для вывода в консоли</summary>
+        public ConsoleColor Color
+        {
+            get;
+            internal set;
         }
 
         #endregion
@@ -96,6 +102,7 @@ namespace Lesson_05_01
             Value = value;
             Parent = parent;
             Tree = tree;
+            Color = ConsoleColor.Gray;
         }
         #endregion
 
