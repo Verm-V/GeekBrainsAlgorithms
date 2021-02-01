@@ -41,38 +41,50 @@ namespace Lesson_05_01
                 Root = new Node(value, null, this);
             // 2 вариант: Дерево не пустое - ищем место для добавления нового узла
             else
-                AddToNode(Root, value);
-
-            Count++;
-        }
-
-        /// <summary>Рекурсивное добавление нового узла после указанного</summary>
-        /// <param name="node">Узел после которого добавляется новый</param>
-        /// <param name="value">Значение для хранения в новом узле</param>
-        private void AddToNode(Node node, int value)
-        {
-            int check = value.CompareTo(node.Value);
-            // 1 вариант: Значение добавлемого узла меньше чем значение текущего узла.      
-            if (check < 0)
             {
-                //Созданем левый узел, если он отсутствует
-                if (node.Left == null)
-                    node.Left = new Node(value, node, this);
-                // Иначе спускаемся вниз по левому узлу
-                else
-                    AddToNode(node.Left, value);
+                //AddToNode(Root, value);
+                Node current = Root;//Текущий узел
+
+                bool isDone = false;//Флаг окончания процесса вставки
+                while (!isDone)//Проверяем пока не дойдем до пустого узла
+                {
+                    Node curent = Root;
+                    int check = current.CompareTo(value);
+                    if (check > 0)//Если вставляемое значение меньше то влево
+                    {
+                        if(current.Left!=null)
+                        {
+                            current = current.Left;
+                        }
+                        else
+                        {
+                            current.Left = new Node(value, current, this);
+                            Count++;
+                            current.Balance();
+                            isDone = true;
+                        }
+                    }
+                    else if (check < 0)//Если вставляемое значение больше то вправо
+                    {
+                        if (current.Right != null)
+                        {
+                            current = current.Right;
+                        }
+                        else
+                        {
+                            current.Right = new Node(value, current, this);
+                            Count++;
+                            current.Balance();
+                            isDone = true;
+                        }
+                    }
+                    else//Если совпадает, то заносить в дерево не будем (дубликаты не нужны)
+                        isDone = true;
+                }
+
             }
-            // 2 Вариант: Значение добавлемого узла больше чем значение текущего узла.      
-            else if (check > 0)
-            {
-                //Создаем правый узел, если он отсутствует
-                if (node.Right == null)
-                    node.Right = new Node(value, node, this);
-                // Иначе спускаемся вниз по правому
-                else
-                    AddToNode(node.Right, value);
-            }
-            node.Balance();
+
+
         }
 
         #endregion
