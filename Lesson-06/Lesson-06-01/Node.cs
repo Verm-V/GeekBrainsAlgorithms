@@ -51,12 +51,13 @@ namespace Lesson_06_01
             Edges.Add(newEdge);
         }
 
-        /// <summary>Проверяет есть ли у данной вершины связь с вершиной с указанным ID</summary>
+        /// <summary>Проверяет есть ли у данной вершины связь с вершиной с указанным ID
+        /// Нужен для избегания дублирования ребер</summary>
         /// <param name="id">ID вершины связь с которой нужно проверить</param>
         /// <returns>true, если связь есть</returns>
         public bool CheckLinkToNode(int id)
         {
-            foreach (var edge in Edges)
+            foreach (Edge edge in Edges)
             {
                 if (edge.ConnectedNode.ID == id)
                 {
