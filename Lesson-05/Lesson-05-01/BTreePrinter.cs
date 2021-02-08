@@ -16,18 +16,20 @@ namespace Lesson_05_01
             public int Size { get { return Text.Length; } }
             public int EndPos { get { return StartPos + Size; } set { StartPos = value - Size; } }
             public NodeInfo Parent, Left, Right;
+            public ConsoleColor color;
         }
 
-        public static void Print(this Node root, string textFormat = "0", int spacing = 1, int topMargin = 2, int leftMargin = 2)
+        public static void Print(this Node root, bool clearColors = true, string textFormat = "[0]", int spacing = 4, int topMargin = 2, int leftMargin = 2)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
             if (root == null) return;
             int rootTop = Console.CursorTop + topMargin;
-            var last = new List<NodeInfo>();
-            var next = root;
+            List<NodeInfo> last = new List<NodeInfo>();
+            Node next = root;
             for (int level = 0; next != null; level++)
             {
-                var item = new NodeInfo { node = next, Text = next.Value.ToString(textFormat) };
+                if (clearColors) next.Color = ConsoleColor.Gray;
+                NodeInfo item = new NodeInfo { node = next, Text = next.Value.ToString(textFormat), color = next.Color };
                 if (level < last.Count)
                 {
                     item.StartPos = last[level].EndPos + spacing;
@@ -56,7 +58,7 @@ namespace Lesson_05_01
                 for (; next == null; item = item.Parent)
                 {
                     int top = rootTop + 2 * level;
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = item.color;
                     Print(item.Text, top, item.StartPos);
                     Console.ForegroundColor = ConsoleColor.Gray;
                     if (item.Left != null)
