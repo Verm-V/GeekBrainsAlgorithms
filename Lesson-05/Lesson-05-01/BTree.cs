@@ -9,6 +9,9 @@ namespace Lesson_05_01
     /// <summary>Класс двоичного дерева поиска</summary>
     public class BTree
     {
+        /// <summary>Задержка для визуализации алгоритма</summary>
+        private const int DELAY = 250;
+
         #region ---- PROPERTIES
 
         /// <summary>Корень дерева</summary>
@@ -38,43 +41,55 @@ namespace Lesson_05_01
                 Root = new Node(value, null, this);
             // 2 вариант: Дерево не пустое - ищем место для добавления нового узла
             else
-                AddToNode(Root, value);
-
-            Count++;
-        }
-
-        /// <summary>Рекурсивное добавление нового узла после указанного</summary>
-        /// <param name="node">Узел после которого добавляется новый</param>
-        /// <param name="value">Значение для хранения в новом узле</param>
-        private void AddToNode(Node node, int value)
-        {
-            int check = value.CompareTo(node.Value);
-            // 1 вариант: Значение добавлемого узла меньше чем значение текущего узла.      
-            if (check < 0)
             {
-                //Созданем левый узел, если он отсутствует
-                if (node.Left == null)
-                    node.Left = new Node(value, node, this);
-                // Иначе спускаемся вниз по левому узлу
-                else
-                    AddToNode(node.Left, value);
+                //AddToNode(Root, value);
+                Node current = Root;//Текущий узел
+
+                bool isDone = false;//Флаг окончания процесса вставки
+                while (!isDone)//Проверяем пока не дойдем до пустого узла
+                {
+                    Node curent = Root;
+                    int check = current.CompareTo(value);
+                    if (check > 0)//Если вставляемое значение меньше то влево
+                    {
+                        if(current.Left!=null)
+                        {
+                            current = current.Left;
+                        }
+                        else
+                        {
+                            current.Left = new Node(value, current, this);
+                            Count++;
+                            current.Balance();
+                            isDone = true;
+                        }
+                    }
+                    else if (check < 0)//Если вставляемое значение больше то вправо
+                    {
+                        if (current.Right != null)
+                        {
+                            current = current.Right;
+                        }
+                        else
+                        {
+                            current.Right = new Node(value, current, this);
+                            Count++;
+                            current.Balance();
+                            isDone = true;
+                        }
+                    }
+                    else//Если совпадает, то заносить в дерево не будем (дубликаты не нужны)
+                        isDone = true;
+                }
+
             }
-            // 2 Вариант: Значение добавлемого узла больше чем значение текущего узла.      
-            else if (check > 0)
-            {
-                //Создаем правый узел, если он отсутствует
-                if (node.Right == null)
-                    node.Right = new Node(value, node, this);
-                // Иначе спускаемся вниз по правому
-                else
-                    AddToNode(node.Right, value);
-            }
-            node.Balance();
+
+
         }
 
         #endregion
 
-        #region ---- FIND METHODS ----
+        #region ---- SEARCH METHODS ----
 
         /// <summary>Проверяет содержит ли дерево заданное значение</summary>
         /// <param name="value">Искомое значение</param>
@@ -92,7 +107,6 @@ namespace Lesson_05_01
         /// <param name="value">Значение поиска</param> 
         /// <param name="parent">Родительский элемент для найденного значения/// </param> 
         /// <returns> Найденный узел (null, если узел не найден) /// </returns> 
-
         private Node Find(int value)
         {
             // Указатель на текущий узел. Начинаем с корня дерева
@@ -121,6 +135,105 @@ namespace Lesson_05_01
         public int GetCount()
         {
             return Count;
+        }
+
+        #endregion
+
+        #region ---- NEW SEARCH METHODS ----
+
+        /// <summary>
+        /// Метод бинарного поиска с задержкой и раскраской для визуализации алгоритма
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool BinarySearch(int value)
+        {
+            // Указатель на текущий узел. Начинаем с корня дерева
+            Node current = Root;
+
+            // Пока текщий узел на пустой 
+            while (current != null)
+            {
+                int result = current.CompareTo(value);
+                ColorPrint();
+
+                // Если значение меньшне текущего - переход влево 
+                if (result > 0)
+                {
+                    current.Color = ConsoleColor.Red;
+                    current = current.Left;
+                }
+                // Если значение больше текщего - переход вправо
+                else if (result < 0)
+                {
+                    current.Color = ConsoleColor.Red;
+                    current = current.Right;
+                }
+                // Если значение совпадает - узел найден
+                else
+                {
+                    current.Color = ConsoleColor.Green;
+                    break;
+                }
+            }
+
+            ColorPrint();
+
+            return current != null; ;
+        }
+
+        /// <summary>
+        /// Поиск (обход) дерева в ширину
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool BFS(int value)
+        {
+            Queue<Node> bufer = new Queue<Node>();
+                        
+            bufer.Enqueue(this.Root);
+            
+            bool isFound = false;
+            while (bufer.Count!=0 && !isFound)
+            {
+                Node element = bufer.Dequeue();
+                if (element.Value == value) isFound = true;
+                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                ColorPrint();
+                if (element.Left != null) bufer.Enqueue(element.Left);
+                if (element.Right != null) bufer.Enqueue(element.Right);
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine();
+
+            return isFound;
+        }
+
+        /// <summary>
+        /// Поиск (обход) дерева в глубину
+        /// </summary>
+        /// <param name="value">Искомое значение</param>
+        /// <returns>true, если узел с таким значением есть в дереве</returns>
+        public bool DFS(int value)
+        {
+            Stack<Node> bufer = new Stack<Node>();
+
+            bufer.Push(this.Root);
+
+            bool isFound = false;
+            while (bufer.Count != 0 && !isFound)
+            {
+                Node element = bufer.Pop();
+                if (element.Value == value) isFound = true;
+                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                ColorPrint();
+                if (element.Right != null) bufer.Push(element.Right);
+                if (element.Left != null) bufer.Push(element.Left);
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine();
+
+            return isFound;
         }
 
         #endregion
@@ -311,6 +424,16 @@ namespace Lesson_05_01
                 Root.PrintNode("", Node.NodePosition.center, true, false);
             else
                 Console.WriteLine("Tree is empty.");
+        }
+
+        /// <summary>
+        /// Вывод дерева на экран с раскраской узлов
+        /// </summary>
+        private void ColorPrint()
+        {
+            Console.Clear();
+            BTreePrinter.Print(Root, false);
+            System.Threading.Thread.Sleep(DELAY);//небольшая задержка для наглядности работы алгоритма
         }
 
         #endregion
