@@ -9,8 +9,9 @@ namespace Lesson_06_01
     /// <summary>Граф</summary>
     public class Graph
     {
+        #region ---- FIELDS & PROPERTIES ----
         /// <summary>Список вершин графа</summary>
-        public List<Node> Nodes { get; }
+        internal List<Node> Nodes { get; }
 
         /// <summary>Количество вершин в графе</summary>
         public int Count
@@ -28,12 +29,20 @@ namespace Lesson_06_01
             set;
         }
 
+        #endregion
+
+        #region ---- CONSTRUCTORS ----
+
         /// <summary>Конструктор</summary>
         public Graph()
         {
             Nodes = new List<Node>();
             Delay = 0;
         }
+
+        #endregion
+
+        #region ---- WORK WITH NODES ----
 
         /// <summary>Добавление вершины</summary>
         /// <param name="id">ID вершины</param>
@@ -43,6 +52,9 @@ namespace Lesson_06_01
                 Nodes.Add(new Node(id, this));
         }
 
+        #endregion
+
+        #region ---- WORK WITH EDGES ----
 
         /// <summary>Добавление ребра</summary>
         /// <param name="firstID">Имя первой вершины</param>
@@ -86,6 +98,10 @@ namespace Lesson_06_01
             }
 
         }
+
+        #endregion
+
+        #region ---- SEARCH METHODS ----
 
         /// <summary>
         /// Поиск (обход) графа в ширину
@@ -133,6 +149,7 @@ namespace Lesson_06_01
 
             return isFound;
         }
+ 
         /// <summary>
         /// Поиск (обход) графа в глубину
         /// </summary>
@@ -191,6 +208,9 @@ namespace Lesson_06_01
             return null;
         }
 
+        #endregion
+
+        #region ---- PRINT METHODS ----
 
         /// <summary>Вывод дерева на экран с раскраской вершин
         /// Используется для визуализации алгоритмов обхода графа</summary>
@@ -202,5 +222,7 @@ namespace Lesson_06_01
             GraphPrinter.Print(this, false);
             System.Threading.Thread.Sleep(Delay);//небольшая задержка для наглядности работы алгоритма
         }
+
+        #endregion
     }
 }

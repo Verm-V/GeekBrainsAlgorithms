@@ -111,7 +111,7 @@ namespace Lesson_06_01
 
         #endregion
 
-        #region -- NUMBER CONSTS --
+        #region -- NUMERIC CONSTS --
 
         /// <summary>Задержка отрисовки по умолчанию</summary>
         public const int DELAY = 500;
@@ -128,7 +128,7 @@ namespace Lesson_06_01
 
         #endregion
 
-        #region ---- FIELDS ----
+        #region ---- FIELDS & PROPERTIES ----
         /// <summary>Генератор случайных чисел</summary>
         private static Random rnd;
         /// <summary>seed для генератора случайных чисел</summary>
@@ -234,7 +234,10 @@ namespace Lesson_06_01
 
         }
 
-
+        /// <summary>Создает новый граф</summary>
+        /// <param name="isRandom">true - случайный, false - стандартный (зарадкоженый)</param>
+        /// <param name="elements">количество элементов в графе</param>
+        /// <returns>Созданный граф</returns>
         private static Graph CreateGraph(bool isRandom, int elements = ELEMENTS)
         {
             Graph newGraph = new Graph();
@@ -248,6 +251,9 @@ namespace Lesson_06_01
             return newGraph;
         }
 
+        /// <summary>Создает случайный граф</summary>
+        /// <param name="elements">Количество элементов</param>
+        /// <returns>Созданный граф</returns>
         private static Graph CreateRandomGraph(int elements = ELEMENTS)
         {
             Graph newGraph = new Graph();
@@ -278,6 +284,8 @@ namespace Lesson_06_01
             return newGraph;
         }
 
+        /// <summary>Создает заранее зарадкоженый граф (для наглядности ДЗ)</summary>
+        /// <returns>Созданный граф</returns>
         private static Graph CreatePredefinedGraph()
         {
             const int ELEMENTS_PREDEF = 15;

@@ -9,7 +9,9 @@ namespace Lesson_06_01
     /// <summary>Вершина графа</summary>
     public class Node
     {
-        /// <summary>Состояния ноды</summary>
+        #region ---- FIELDS & PROERTIES ----
+
+        /// <summary>Состояния вершины графа</summary>
         public enum Status : int
         {
             processed = (int)ConsoleColor.Red,
@@ -28,13 +30,16 @@ namespace Lesson_06_01
         /// <summary>Список ребер</summary>
         public List<Edge> Edges { get; }
 
-
-        /// <summary>Цвет вершины для вывода в консоли</summary>
+        /// <summary>Состояние вершины графа</summary>
         public Status State
         {
             get;
             internal set;
         }
+
+        #endregion
+
+        #region ---- CONSTRUCTORS ----
 
         /// <summary>Конструктор</summary>
         /// <param name="id">ID вершины</param>
@@ -45,6 +50,10 @@ namespace Lesson_06_01
             GraphParent = graph;
             State = Status.not_processed;
         }
+
+        #endregion
+
+        #region ---- WORK WITH EDGES ----
 
         /// <summary>Добавить ребро</summary>
         /// <param name="node">Вершина</param>
@@ -76,5 +85,7 @@ namespace Lesson_06_01
             }
             return false;
         }
+
+        #endregion
     }
 }

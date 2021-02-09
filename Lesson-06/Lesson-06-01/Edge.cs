@@ -9,11 +9,17 @@ namespace Lesson_06_01
     /// <summary>Ребро графа</summary>
     public class Edge
     {
+        #region ---- FIELDS & PROPERTIES ----
+
         /// <summary>Вес ребра</summary>
         public int Weight { get; }
 
         /// <summary>Вершина с которой ребро связывает узел</summary>
         public Node ConnectedNode { get; }
+
+        #endregion]
+
+        #region ---- CONSTRUCTORS ----
 
         /// <summary>Конструктор</summary>
         /// <param name="connectedNode">Связанная вершина</param>
@@ -23,5 +29,7 @@ namespace Lesson_06_01
             ConnectedNode = connectedNode;
             Weight = weight;
         }
+
+        #endregion
     }
 }

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Lesson_06_01
 {
-
     /// <summary>Выводит в консоль содержимое заданного графа</summary>
     public static class GraphPrinter
     {
+        #region ---- NUMERIC CONSTANTS ----
+
         /// <summary>Задержка отрисовки по умолчанию</summary>
         public const int DELAY = 0;
 
@@ -31,6 +32,10 @@ namespace Lesson_06_01
         /// <summary>Радиус окружности на которой лежат вершины графа</summary>
         private const int RADIUS = 9;
 
+        #endregion
+
+        #region ---- FIELDS & PROPERTIES ----
+
         /// <summary>Массив содержащий допонительную информацию о вершинах дерева
         /// для вывода их на экран</summary>
         private static NodeInfo[] info = new NodeInfo[1];
@@ -50,7 +55,9 @@ namespace Lesson_06_01
             /// <summary>Координата Y на экране</summary>
             public int y;
         }
+        #endregion
 
+        #region ---- WORK WITH NODEINFO ----
         /// <summary>Изменяет положение вершины графа для вывода на экран</summary>
         /// <param name="nodeID">ID вершины графа</param>
         /// <param name="dx">смещение по X</param>
@@ -121,6 +128,10 @@ namespace Lesson_06_01
                 info[i] = new NodeInfo { node = graph.Nodes[i], text = graph.Nodes[i].ID.ToString(textFormat), x = x, y = y };
             }
         }
+
+        #endregion
+
+        #region ---- MAIN PRINT METHODS ----
 
         /// <summary>Выводит граф и связи между его узлами на экран</summary>
         /// <param name="graph">Граф выводимый на экран</param>
@@ -201,6 +212,24 @@ namespace Lesson_06_01
 
         }
 
+        /// <summary>Печатает на экране пустое поле затирая информацию</summary>
+        private static void PrintClearField()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            for (int r = 0; r < HEIGHT; r++)
+            {
+                for (int c = 0; c < WIDTH; c++)
+                {
+                    Console.Write(".");
+                }
+                Console.WriteLine();
+            }
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        #endregion
+
+        #region ---- EDGES PRINT METHODS ----
 
         /// <summary>Рисует связь между двумя узлами и сами узлы
         /// Рисование линии сделано по модификации алгоритма Брезенхэма</summary>
@@ -289,6 +318,10 @@ namespace Lesson_06_01
 
         }
 
+#endregion
+
+        #region ---- NODES PRINT METHODS ----
+
         /// <summary>
         /// Печатае на экран все вершины дерева
         /// </summary>
@@ -317,21 +350,9 @@ namespace Lesson_06_01
             Console.SetCursorPosition(0, HEIGHT);
         }
 
+        #endregion
 
-        /// <summary>Печатает на экране пустое поле затирая информацию</summary>
-        private static void PrintClearField()
-        {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            for (int r = 0; r < HEIGHT; r++)
-            {
-                for (int c = 0; c < WIDTH; c++)
-                {
-                    Console.Write(".");
-                }
-                Console.WriteLine();
-            }
-            Console.ForegroundColor = ConsoleColor.Gray;
-        }
+        #region ---- WORK WITH TEXT BUFFER ----
 
         /// <summary>Очищает текстовый буфер</summary>
         public static void ClearText()
@@ -357,6 +378,8 @@ namespace Lesson_06_01
 
             }
         }
+
+        #endregion
     }
 
 }
