@@ -55,7 +55,10 @@ namespace Lesson_06_01
         /// <param name="nodeID">ID вершины графа</param>
         /// <param name="dx">смещение по X</param>
         /// <param name="dy">смещение по Y</param>
-        public static void MoveNode (int nodeID, int dx, int dy)
+        /// <param name="relative">
+        /// true, если изменение координат отрносительное
+        /// false, если изменение координат абсолютное (от левого верхного угла)</param>
+        public static void MoveNode (int nodeID, int dx, int dy, bool relative = true)
         {
             //Ищем нужный узел
             int index = 0;
@@ -64,16 +67,22 @@ namespace Lesson_06_01
                 if (info[i].node.ID == nodeID) index = i;
             }
             //Меняем координаты
-            info[index].x += dx;
-            info[index].y += dy;
+            if(relative)
+            {
+                info[index].x += dx;
+                info[index].y += dy;
+            }
+            else
+            {
+                info[index].x = dx;
+                info[index].y = dy;
+            }
+
             //Проверка на выход за границы
             if (info[index].x < info[index].text.Length / 2) info[index].x = info[index].text.Length / 2;
             if (info[index].y < 0) info[index].y = 0;
             if (info[index].x > WIDTH - info[index].text.Length / 2 ) info[index].x = WIDTH - info[index].text.Length / 2;
-            if (info[index].y > HEIGHT) info[index].y = HEIGHT;
-
-
-
+            if (info[index].y > HEIGHT - 1) info[index].y = HEIGHT - 1;
         }
 
         /// <summary>Меняет местами две вершины на экране</summary>
@@ -98,7 +107,7 @@ namespace Lesson_06_01
         /// для печати на экране</summary>
         /// <param name="graph">Печатаемый граф</param>
         /// <param name="textFormat">Формат вывода вершин на экран</param>
-        private static void CreateGraphInfo(Graph graph, string textFormat = "[00]")
+        public static void CreateGraphInfo(Graph graph, string textFormat = "[00]")
         {
             info = new NodeInfo[graph.Count];
 
@@ -141,16 +150,45 @@ namespace Lesson_06_01
             PrintText();
         }
 
-        /// <summary>Выводит на экран подсказку о соответствии цветов и весов ребер</summary>
+        /// <summary>Выводит на экран подсказку о соответствии цветов вершин и ребер</summary>
         private static void PrintLegend()
         {
             Console.SetCursorPosition(CX, HEIGHT + 1);
             Console.Write("Обозначения");
+
+            //Обозначения вершин
             Console.SetCursorPosition(CX, HEIGHT + 2);
+            Console.Write("вершин:");
+
+            ConsoleColor[] legendColors = {
+                ConsoleColor.Gray,
+                ConsoleColor.Magenta,
+                ConsoleColor.Red,
+                ConsoleColor.Yellow,
+                ConsoleColor. Green };
+
+            string[] legendLabels = {
+                "не обработана",
+                "обрабатывается",
+                "обработана",
+                "помечена для обработки",
+                "содержит искомое значение" };
+
+            for (int i = 0; i < legendLabels.Length; i++)
+            {
+                Console.SetCursorPosition(CX, HEIGHT + 3 + i);
+                Console.BackgroundColor = legendColors[i];
+                Console.Write("   ");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.Write("-" + legendLabels[i]);
+            }
+
+            //Обозначения ребер
+            Console.SetCursorPosition(CX, HEIGHT + 8);
             Console.Write("весов:");
             for (int i = 0; i < 5; i++)
             {
-                Console.SetCursorPosition(CX + i * 3, HEIGHT + 3);
+                Console.SetCursorPosition(CX + i * 3, HEIGHT + 9);
                 ConsoleColor color = (ConsoleColor)(i + 9);
                 Console.BackgroundColor = color;
                 Console.ForegroundColor = ConsoleColor.Black;
@@ -159,29 +197,10 @@ namespace Lesson_06_01
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
 
-            Console.SetCursorPosition(CX, HEIGHT + 4);
-            Console.Write("вершин:");
-
-            Console.SetCursorPosition(CX, HEIGHT + 5);
-            Console.BackgroundColor = ConsoleColor.Red;
-            Console.Write("   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write("-проверена");
-
-            Console.SetCursorPosition(CX, HEIGHT + 6);
-            Console.BackgroundColor = ConsoleColor.Yellow;
-            Console.Write("   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write("-идет в буфер для проверки");
-
-            Console.SetCursorPosition(CX, HEIGHT + 7);
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.Write("   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write("-содержит искомое значение");
-
             Console.SetCursorPosition(0, HEIGHT);
+
         }
+
 
         /// <summary>Рисует связь между двумя узлами и сами узлы
         /// Рисование линии сделано по модификации алгоритма Брезенхэма</summary>

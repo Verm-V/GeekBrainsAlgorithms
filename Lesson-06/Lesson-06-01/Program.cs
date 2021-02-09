@@ -93,6 +93,8 @@ namespace Lesson_06_01
             "Удалить ребро",
             "Поменять вершины местами",
             "Передвинуть вершину",
+            "Создать случайный граф",
+            "Вернуть стандартный граф",
             "Выход"
         };
 
@@ -119,23 +121,32 @@ namespace Lesson_06_01
         /// <summary>Максимальное значение числа хранимого в узле дерева</summary>
         private const int VALUE_MAX = 99;
         /// <summary>Количество узлов в дереве (для первоначального случайного заполнения)</summary>
-        private const int ELEMENTS = 14;
+        private const int ELEMENTS = 8;
         /// <summary>Максимальный вес ребра в графе</summary>
         private const int MAX_WEIGHT = 5;
-       
+
 
         #endregion
 
+        #region ---- FIELDS ----
         /// <summary>Генератор случайных чисел</summary>
         private static Random rnd;
+        /// <summary>seed для генератора случайных чисел</summary>
+        private static int seed = 0;
+
+        /// <summary>Количество элементов в графе</summary>
+        private static int elements = ELEMENTS;
+
+        /// <summary>Задержка для визуализации алгоритма</summary>
+        private static int delay = DELAY;
+
+
+        #endregion
 
         static int Main(string[] args)
         {
             #region ---- INIT ----
 
-            int seed = 0;
-            int elements = ELEMENTS;
-            int delay = DELAY;
 
             //Обработка аругментов командной строки
             if (args.Length != 0)
@@ -194,53 +205,121 @@ namespace Lesson_06_01
 
             #endregion
 
-            #region ---- GRAPH CREATION ----
+            #region ---- GRAPH CREATIONS ----
             //Создаем граф
             Graph graph = new Graph();
-            graph.Delay = delay;
+            graph = CreateGraph(false, elements);
+
+            #endregion
+
+            #region ---- MAIN WORK CYCLE ----
+
+            MainMenu(graph, mainMenu);
+
+            #endregion
+
+            return 0;
+        }
+
+        #region ---- WORK WITH GRAPH ----
+
+        /// <summary>Вызов печати графаы</summary>
+        /// <param name="graph"></param>
+        /// <param name="isColorsClear"></param>
+        private static void Print(Graph graph, bool isColorsClear = true)
+        {
+            Console.Clear();
+            GraphPrinter.ClearText();
+            GraphPrinter.Print(graph, isColorsClear);
+
+        }
+
+
+        private static Graph CreateGraph(bool isRandom, int elements = ELEMENTS)
+        {
+            Graph newGraph = new Graph();
+            if (isRandom)
+                newGraph = CreateRandomGraph(elements);
+            else
+                newGraph = CreatePredefinedGraph();
+
+            newGraph.Delay = delay;
+
+            return newGraph;
+        }
+
+        private static Graph CreateRandomGraph(int elements = ELEMENTS)
+        {
+            Graph newGraph = new Graph();
 
             //Добавляем в граф вершины
             for (int i = 0; i < elements; i++)
             {
-                graph.AddNode(i);
+                newGraph.AddNode(i);
             }
+
+            GraphPrinter.CreateGraphInfo(newGraph);
 
             //Добавляем связи между вершинами
             for (int i = 0; i < elements; i++)
             {
-                for (int j = 0; j < rnd.Next(1)+1; j++)
+                for (int j = 0; j < rnd.Next(1) + 2; j++)
                 {
                     bool isGenerated = false;
-                    while(!isGenerated)
+                    while (!isGenerated)
                     {
                         int toNode = rnd.Next(elements);
-                        if(toNode!=i)
-                            isGenerated = graph.AddEdge(i, toNode, rnd.Next(MAX_WEIGHT));
-                        if (graph.Nodes[i].Edges.Count >= 2) isGenerated = true;
+                        if (toNode != i)
+                            isGenerated = newGraph.AddEdge(i, toNode, rnd.Next(MAX_WEIGHT));
+                        if (newGraph.Nodes[i].Edges.Count >= 2) isGenerated = true;
                     }
                 }
             }
-
-            #endregion
-
-            //Основной цикл
-            MainMenu(graph, mainMenu);
-
-            return 0;
-
+            return newGraph;
         }
 
-
-        /// <summary>Вызов печати графаы</summary>
-        /// <param name="graph"></param>
-        /// <param name="method"></param>
-        private static void Print(Graph graph)
+        private static Graph CreatePredefinedGraph()
         {
-            Console.Clear();
-            GraphPrinter.ClearText();
-            GraphPrinter.Print(graph, true);
+            const int ELEMENTS_PREDEF = 15;
 
+            Graph newGraph = new Graph();
+
+            //Добавляем в граф вершины
+            for (int i = 0; i < ELEMENTS_PREDEF; i++)
+            {
+                newGraph.AddNode(i);
+            }
+
+            //Предварительное создание массива координат вершин
+            GraphPrinter.CreateGraphInfo(newGraph);
+
+            //Расставляем вершины так как нам нужно
+            int[,] coords = {
+                { 32, 0 }, { 16, 3 }, { 32, 4 }, { 48, 2 }, { 6, 7 }, { 24, 7 }, { 36, 8 }, { 54, 7 },
+                { 7, 11 }, { 22, 12 }, { 36, 12 }, { 54, 12 }, { 18, 15 }, { 30, 15 }, { 34, 19 }};
+
+            for (int i = 0; i < ELEMENTS_PREDEF; i++)
+            {
+                GraphPrinter.MoveNode(i, coords[i, 0], coords[i, 1], false);
+            }
+
+            //Добавляем ребра
+            int[,] edges = {
+                { 0, 1 }, { 0, 2 }, { 0, 3 }, { 1, 4 }, { 1, 5 }, { 2, 6 }, { 3, 6 }, { 3, 7 },
+                { 4, 8 }, { 5, 9 }, { 5, 10 }, { 6, 10 }, { 6, 11 }, { 7, 11 }, { 8, 9 }, { 8, 12 },
+                { 9, 13 }, { 10, 13 }, { 11, 14 }, { 13, 14 }, { 12, 14 }};
+
+            for (int i = 0; i < edges.Length/2; i++)
+            {
+                newGraph.AddEdge(edges[i, 0], edges[i, 1], rnd.Next(MAX_WEIGHT));
+            }
+
+            return newGraph;
         }
+
+        #endregion
+
+        #region ---- MENUS ----
 
         /// <summary>Формирует строку содержащую пункты меню для вывода на экран</summary>
         /// <param name="menu">Массив строк с пунктами меню</param>
@@ -254,6 +333,7 @@ namespace Lesson_06_01
 
             return stringBuilder.ToString();
         }
+
 
         /// <summary>Главное меню</summary>
         /// <param name="graph">Граф</param>
@@ -284,7 +364,7 @@ namespace Lesson_06_01
                         break;
                     case 3://graph menu
                         Print(graph);
-                        GraphMenu(graph, graphMenu);
+                        graph = GraphMenu(graph, graphMenu);
                         break;
                     case 0://exit
                         isExit = true;
@@ -297,7 +377,7 @@ namespace Lesson_06_01
         /// <summary>Меню работы с графом</summary>
         /// <param name="graph">Граф</param>
         /// <param name="menu">Содержание меню</param>
-        private static void GraphMenu(Graph graph, string[] menu)
+        private static Graph GraphMenu(Graph graph, string[] menu)
         {
             string menuMessage = MenuMessage(menu);
             Print(graph);
@@ -333,6 +413,14 @@ namespace Lesson_06_01
                         Print(graph);
                         MoveMenu(graph, moveMenu);
                         break;
+                    case 5://create random graph
+                        Print(graph);
+                        graph = CreateGraph(true, elements);
+                        break;
+                    case 6://return to default graph
+                        Print(graph);
+                        graph = CreateGraph(false);
+                        break;
                     case 0://exit
                         isExit = true;
                         break;
@@ -340,9 +428,9 @@ namespace Lesson_06_01
                 Console.Clear();
                 Print(graph);
             }
+            return graph;
 
         }
-
 
 
         /// <summary>Меню передвижения вершины</summary>
@@ -352,7 +440,8 @@ namespace Lesson_06_01
         {
             string menuMessage = MenuMessage(menu);
             int id = NumberInput(messages[Messages.EnterNumber], 0, graph.Count - 1, false);
-            Print(graph);
+            graph.FindNode(id).Color = ConsoleColor.Yellow;
+            Print(graph, false);
             bool isExit = false;
             while (!isExit)
             {
@@ -374,15 +463,18 @@ namespace Lesson_06_01
                     case 5://change node
                         Print(graph);
                         id = NumberInput(messages[Messages.EnterNumber], 0, graph.Count - 1, false);
+                        graph.FindNode(id).Color = ConsoleColor.Yellow;
                         break;
                     case 0://exit
                         isExit = true;
                         break;
                 }
                 Console.Clear();
-                Print(graph);
+                Print(graph, false);
             }
         }
+
+        #endregion
 
         #region ---- ADDITIONAL METHODS ----
 

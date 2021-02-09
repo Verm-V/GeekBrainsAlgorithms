@@ -107,22 +107,25 @@ namespace Lesson_06_01
                 Node element = bufer.Dequeue();//Достаем элемент из очереди
                 if (element.ID == id) isFound = true;//Если это нужны элемент то радуемся
                 //Выставляем флаг проверки того, что элемент уже обработан
-                //КРАСНЫЙ - элемент проверен и не совпадает с искомым значением
-                //ЗЕЛЕНЫЙ - элемент проверен и совпадает с искомым значением
-                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                //ПУРПУРНЫЙ - элемент обрабатывается в данный момент
+                //ЗЕЛЕНЫЙ - элемент обработан и совпадает с искомым значением
+                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Magenta;
                 ColorPrint($"Проверяемая вершина: {element.ID}");
 
                 if(!isFound)//Если не нашли значение то добавляем сопряженные вершины в очередь на проверку
+                {
                     foreach (Edge edge in element.Edges)
                     {
                         if (edge.ConnectedNode.Color == ConsoleColor.Gray)
                         {
-                            //ЖЕЛТЫЙ - элемент уже помещен в очередь и в будущем его туда загонять не нужно
+                            //ЖЕЛТЫЙ - элемент помещается в очередь для последующей обработки
                             edge.ConnectedNode.Color = ConsoleColor.Yellow;
                             bufer.Enqueue(edge.ConnectedNode);
                             ColorPrint($"Вершина {edge.ConnectedNode.ID} идет в очередь");
                         }
                     }
+                    element.Color = ConsoleColor.Red;
+                }
             }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine();
