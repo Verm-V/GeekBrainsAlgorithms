@@ -161,11 +161,11 @@ namespace Lesson_06_01
             Console.Write("вершин:");
 
             ConsoleColor[] legendColors = {
-                ConsoleColor.Gray,
-                ConsoleColor.Magenta,
-                ConsoleColor.Red,
-                ConsoleColor.Yellow,
-                ConsoleColor. Green };
+                (ConsoleColor)Node.Status.not_processed,
+                (ConsoleColor)Node.Status.in_process,
+                (ConsoleColor)Node.Status.processed,
+                (ConsoleColor)Node.Status.marked_to_process,
+                (ConsoleColor)Node.Status.founded};
 
             string[] legendLabels = {
                 "не обработана",
@@ -300,7 +300,7 @@ namespace Lesson_06_01
         {
             for (int i = 0; i < info.Length; i++)
             {
-                if (clearColors) info[i].node.Color = ConsoleColor.Gray;
+                if (clearColors) info[i].node.State = Node.Status.not_processed;
                 PrintNode(info[i]);
             }
 
@@ -311,7 +311,7 @@ namespace Lesson_06_01
         private static void PrintNode(NodeInfo nodeInfo)
         {
             Console.SetCursorPosition(nodeInfo.x - nodeInfo.text.Length/2, nodeInfo.y);
-            Console.ForegroundColor = nodeInfo.node.Color;
+            Console.ForegroundColor = (ConsoleColor)nodeInfo.node.State;
             Console.Write(nodeInfo.text);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.SetCursorPosition(0, HEIGHT);

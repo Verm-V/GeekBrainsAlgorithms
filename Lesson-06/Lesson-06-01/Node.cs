@@ -9,6 +9,16 @@ namespace Lesson_06_01
     /// <summary>Вершина графа</summary>
     public class Node
     {
+        /// <summary>Состояния ноды</summary>
+        public enum Status : int
+        {
+            processed = (int)ConsoleColor.Red,
+            not_processed = (int)ConsoleColor.Gray,
+            in_process = (int)ConsoleColor.Magenta,
+            marked_to_process = (int)ConsoleColor.Yellow,
+            founded = (int)ConsoleColor.Green
+        }
+
         /// <summary>Граф к которому принадлежит вершина</summary>
         public Graph GraphParent { get; }
 
@@ -20,7 +30,7 @@ namespace Lesson_06_01
 
 
         /// <summary>Цвет вершины для вывода в консоли</summary>
-        public ConsoleColor Color
+        public Status State
         {
             get;
             internal set;
@@ -33,7 +43,7 @@ namespace Lesson_06_01
             ID = id;
             Edges = new List<Edge>();
             GraphParent = graph;
-            Color = ConsoleColor.Gray;
+            State = Status.not_processed;
         }
 
         /// <summary>Добавить ребро</summary>

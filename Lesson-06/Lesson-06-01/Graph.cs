@@ -109,22 +109,23 @@ namespace Lesson_06_01
                 //Выставляем флаг проверки того, что элемент уже обработан
                 //ПУРПУРНЫЙ - элемент обрабатывается в данный момент
                 //ЗЕЛЕНЫЙ - элемент обработан и совпадает с искомым значением
-                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Magenta;
+                element.State = isFound ? Node.Status.founded : Node.Status.in_process;
                 ColorPrint($"Проверяемая вершина: {element.ID}");
 
                 if(!isFound)//Если не нашли значение то добавляем сопряженные вершины в очередь на проверку
                 {
                     foreach (Edge edge in element.Edges)
                     {
-                        if (edge.ConnectedNode.Color == ConsoleColor.Gray)
+                        if (edge.ConnectedNode.State == Node.Status.not_processed)
                         {
                             //ЖЕЛТЫЙ - элемент помещается в очередь для последующей обработки
-                            edge.ConnectedNode.Color = ConsoleColor.Yellow;
+                            edge.ConnectedNode.State = Node.Status.marked_to_process;
                             bufer.Enqueue(edge.ConnectedNode);
                             ColorPrint($"Вершина {edge.ConnectedNode.ID} идет в очередь");
                         }
                     }
-                    element.Color = ConsoleColor.Red;
+                    //КРАСНЫЙ - элемент обработан
+                    element.State = Node.Status.processed;
                 }
             }
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -154,16 +155,16 @@ namespace Lesson_06_01
                 //Выставляем флаг проверки того, что элемент уже обработан
                 //КРАСНЫЙ - элемент проверен и не совпадает с искомым значением
                 //ЗЕЛЕНЫЙ - элемент проверен и совпадает с искомым значением
-                element.Color = isFound ? ConsoleColor.Green : ConsoleColor.Red;
+                element.State = isFound ? Node.Status.founded : Node.Status.processed;
                 ColorPrint($"Проверяемая вершина: {element.ID}");
 
                 if (!isFound)//Если не нашли значение то добавляем сопряженные вершины в стек на проверку
                     foreach (Edge edge in element.Edges)
                     {
-                        if (edge.ConnectedNode.Color == ConsoleColor.Gray)
+                        if (edge.ConnectedNode.State == Node.Status.not_processed)
                         {
                             //ЖЕЛТЫЙ - элемент уже помещен в стек и в будущем его туда загонять не нужно
-                            edge.ConnectedNode.Color = ConsoleColor.Yellow;
+                            edge.ConnectedNode.State = Node.Status.marked_to_process;
                             bufer.Push(edge.ConnectedNode);
                             ColorPrint($"Вершина {edge.ConnectedNode.ID} идет в стек");
                         }

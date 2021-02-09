@@ -440,7 +440,7 @@ namespace Lesson_06_01
         {
             string menuMessage = MenuMessage(menu);
             int id = NumberInput(messages[Messages.EnterNumber], 0, graph.Count - 1, false);
-            graph.FindNode(id).Color = ConsoleColor.Yellow;
+            graph.FindNode(id).State = Node.Status.marked_to_process;
             Print(graph, false);
             bool isExit = false;
             while (!isExit)
@@ -463,7 +463,7 @@ namespace Lesson_06_01
                     case 5://change node
                         Print(graph);
                         id = NumberInput(messages[Messages.EnterNumber], 0, graph.Count - 1, false);
-                        graph.FindNode(id).Color = ConsoleColor.Yellow;
+                        graph.FindNode(id).State = Node.Status.marked_to_process;
                         break;
                     case 0://exit
                         isExit = true;
