@@ -15,7 +15,7 @@ namespace Lesson_06_01
         public const int DELAY = 0;
 
         /// <summary>Ширина поля на котором рисуется граф</summary>
-        private const int WIDTH = 64;
+        private const int WIDTH = 60;
         /// <summary>Высота поля на котором рисуется граф</summary>
         private const int HEIGHT = 19;
 
@@ -183,7 +183,7 @@ namespace Lesson_06_01
                 "обрабатывается",
                 "обработана",
                 "помечена для обработки",
-                "содержит искомое значение" };
+                "содержит нужное значение" };
 
             for (int i = 0; i < legendLabels.Length; i++)
             {

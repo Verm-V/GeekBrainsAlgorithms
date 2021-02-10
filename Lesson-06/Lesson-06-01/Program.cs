@@ -116,6 +116,11 @@ namespace Lesson_06_01
         /// <summary>Задержка отрисовки по умолчанию</summary>
         public const int DELAY = 500;
 
+        /// <summary>Ширина окна консоли</summary>
+        private const int CONSOLE_WINDOW_W = 88;
+        /// <summary>Высота окна консоли</summary>
+        private const int CONSOLE_WINDOW_H = 32;
+
         /// <summary>Минимальное значение числа хранимого в узле дерева</summary>
         private const int VALUE_MIN = 0;
         /// <summary>Максимальное значение числа хранимого в узле дерева</summary>
@@ -147,6 +152,8 @@ namespace Lesson_06_01
         {
             #region ---- INIT ----
 
+            //Изменяем размер окна консоли, чтобы влезали все художества с графом
+            Console.SetWindowSize(CONSOLE_WINDOW_W, CONSOLE_WINDOW_H);
 
             //Обработка аругментов командной строки
             if (args.Length != 0)
@@ -361,12 +368,14 @@ namespace Lesson_06_01
                     case 1://BFS
                         Print(graph);
                         bool isContain = graph.BFS(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        Console.ForegroundColor = isContain ? ConsoleColor.Green : ConsoleColor.Red;
                         MessageWaitKey(isContain ? messages[Messages.Contain] : messages[Messages.NotContain]);
                         Print(graph);
                         break;
                     case 2://DFS
                         Print(graph);
                         isContain = graph.DFS(NumberInput(messages[Messages.EnterNumber], VALUE_MIN, VALUE_MAX, false));
+                        Console.ForegroundColor = isContain ? ConsoleColor.Green : ConsoleColor.Red;
                         MessageWaitKey(isContain ? messages[Messages.Contain] : messages[Messages.NotContain]);
                         Print(graph);
                         break;
