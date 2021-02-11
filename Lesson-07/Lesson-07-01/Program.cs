@@ -53,7 +53,11 @@ namespace Lesson_07_01
             From,
             To,
             Amount,
-            WhiteSpaceLine
+            WhiteSpaceLine,
+            EnterColumn,
+            EnterRow,
+            EnterWidth,
+            EnterHeight
         }
 
         /// <summary> Словарь с сообщениями для пользователя </summary>
@@ -65,15 +69,22 @@ namespace Lesson_07_01
         { Messages.From, "от"},
         { Messages.To, "до"},
         { Messages.Amount, "всего"},
-        { Messages.WhiteSpaceLine, "        "}
+        { Messages.WhiteSpaceLine, "        "},
+        { Messages.EnterColumn, "Введите номер столбца: "},
+        { Messages.EnterRow, "Введите номер ряда: "},
+        { Messages.EnterWidth, "Введите ширину поля: "},
+        { Messages.EnterHeight, "Введите высоту поля: "}
         };
 
         /// <summary> Пункты главного меню, последний пункт выход из программы </summary>
         private static readonly string[] mainMenu = new string[]
         {
-            "Подсчет количества путей\n",
-            "Создать новое поле",
-            "Заполнить поле препятствиями",
+            "Подсчет количества путей без рекурсии",
+            "Подсчет количества путей через рекурсию\n",
+            "Создать новое поле\n",
+            "Добавить препятствие на поле по координатам",
+            "Добавить случайное препятствие на поле\n",
+            "Очистить рассчеты",
             "Очистить поле от препятствий\n",
             "Выход"
         };
@@ -83,19 +94,12 @@ namespace Lesson_07_01
         #region ---- NUMERIC CONSTS ----
 
         /// <summary>Задержка отрисовки по умолчанию</summary>
-        public const int DELAY = 500;
+        public const int DELAY = 0;
 
         /// <summary>Ширина окна консоли</summary>
         private const int CONSOLE_WINDOW_W = 88;
         /// <summary>Высота окна консоли</summary>
-        private const int CONSOLE_WINDOW_H = 32;
-
-        /// <summary>Минимальное значение числа хранимого в узле дерева</summary>
-        private const int VALUE_MIN = 0;
-        /// <summary>Максимальное значение числа хранимого в узле дерева</summary>
-        private const int VALUE_MAX = 99;
-        /// <summary>Количество узлов в дереве (для первоначального случайного заполнения)</summary>
-        private const int ELEMENTS = 8;
+        private const int CONSOLE_WINDOW_H = 36;
 
         #endregion
 
@@ -167,9 +171,10 @@ namespace Lesson_07_01
 
             #endregion
 
-            #region ---- FIELD MAKING ----
+            #region ---- SEARCHER MAKING ----
 
-            waySearcher = new WaySearcher(10, 10); 
+            waySearcher = new WaySearcher(WaySearcher.MAX_WIDTH, WaySearcher.MAX_HEIGHT);
+            waySearcher.Delay = delay;
 
             #endregion
 
@@ -188,6 +193,7 @@ namespace Lesson_07_01
         private static void Print()
         {
             waySearcher.PrintField();
+            Console.WriteLine();
         }
 
 
@@ -219,12 +225,37 @@ namespace Lesson_07_01
                 switch (input)
                 {
                     case 1://search ways
+                        waySearcher.SearchWays();
                         break;
-                    case 2://create new field
+                    case 2://search ways
+                        waySearcher.SearchWaysRecurrent();
                         break;
-                    case 3://add obstacles
+                    case 3://create new field
+                        Print();
+                        int width = NumberInput(messages[Messages.EnterWidth], WaySearcher.MIN_WIDTH, WaySearcher.MAX_WIDTH, false);
+                        int height = NumberInput(messages[Messages.EnterHeight], WaySearcher.MIN_HEIGHT, WaySearcher.MAX_HEIGHT, false);
+                        waySearcher = new WaySearcher(width, height);
                         break;
-                    case 4://delete obstacles
+                    case 4://add obstacle
+                        Print();
+                        int column = NumberInput(messages[Messages.EnterColumn], 0, waySearcher.Width-1, false);
+                            int row = NumberInput(messages[Messages.EnterRow], 0, waySearcher.Height-1, false);
+                            waySearcher.AddObstacle(column, row);
+                        break;
+                    case 5://add random obstacle
+                        bool isAdded = false;
+                        while (!isAdded)
+                        {
+                            column = rnd.Next(waySearcher.Width);
+                            row = rnd.Next(waySearcher.Height);
+                            isAdded = waySearcher.AddObstacle(column, row);
+                        }
+                        break;
+                    case 6://delete calculations
+                        waySearcher.ClearField(false);
+                        break;
+                    case 7://delete obstacles
+                        waySearcher.ClearField(true);
                         break;
                     case 0://exit
                         isExit = true;
