@@ -8,6 +8,8 @@ namespace Lesson_08_01
 {
     class Program
     {
+        #region ---- CONSTATNTS ----        
+
         /// <summary>Количество элементов в сортируемом списке</summary>
         private const int ELEMENTS = 10000;
         /// <summary>Минимально возможное значение элемента в сортируемом списке</summary>
@@ -15,12 +17,12 @@ namespace Lesson_08_01
         /// <summary>Максимально возможное значение элемента в сортируемом списке</summary>
         private const int MAX_VALUE = 10000;
 
-        /// <summary>Генератор случайных чисел</summary>
-        private static Random rnd = new Random();
+        #endregion
 
         static void Main(string[] args)
         {
             //Создаем и заполняем список чисел
+            Random rnd = new Random();//Генератор случайных чисел
             List<int> unsorted = new List<int>();
             Console.WriteLine("Создаем спсок случайных чисел");
             for (int i = 0; i < ELEMENTS; i++)
@@ -39,6 +41,8 @@ namespace Lesson_08_01
             Console.ReadLine();
 
         }
+
+        #region ---- SORT METHODS ----
 
         /// <summary>Выполняет bucket sort на заданном списке чисел</summary>
         /// <param name="numbers">Список чисел который нужно отсортировать</param>
@@ -134,6 +138,7 @@ namespace Lesson_08_01
             return numbers;
         }
 
+        #endregion
 
 
     }
